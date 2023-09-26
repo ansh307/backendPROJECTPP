@@ -172,6 +172,7 @@ app.get("/api/getData", (req, res) => {
           return item.Name.includes(searchQuery);
         })
       : uploadedData;
+    console.log(filteredData);
     res.json(filteredData);
   } catch (error) {
     console.error("Error in /api/getData:", error);
