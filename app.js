@@ -93,85 +93,6 @@ app.post("/api/upload", (req, res) => {
     });
 });
 
-// !!!!!!!!!!!!!!!!!!!!!!
-
-// app.post("/api/submit", (req, res) => {
-//   const selectedNames = req.body.selectedNames;
-//   const selectedData = [];
-
-//   if (!selectedNames) {
-//     return res.status(400).send("Select at least one name to download.");
-//   }
-
-//   // Find the selected data based on the names
-//   selectedNames.forEach((name) => {
-//     const foundData = data.find((item) => item["Name"] === name);
-//     if (foundData) {
-//       selectedData.push(foundData);
-//     }
-//   });
-
-//   if (selectedData.length === 0) {
-//     return res.status(400).send("No data found for selected names.");
-//   }
-
-//   const workbook = new ExcelJS.Workbook();
-//   const worksheet = workbook.addWorksheet("Selected Names");
-
-//   // Use the same column titles as in your Excel file
-//   const columnTitles = [
-//     "Select",
-//     "ID",
-//     "Name",
-//     "Enrollment No.",
-//     "Roll no.",
-//     "College",
-//     "Branch",
-//     "Year",
-//     "Contact No.",
-//     "E Mail ID",
-//   ];
-
-//   // Add the column titles as the first row
-//   worksheet.addRow(columnTitles);
-
-//   // Add the selected data to the worksheet
-//   selectedData.forEach((dataItem) => {
-//     const row = [];
-//     columnTitles.forEach((title) => {
-//       row.push(dataItem[title]);
-//     });
-//     worksheet.addRow(row);
-//   });
-
-//   const filename = `selected_names_${Date.now()}.xlsx`;
-
-//   res.setHeader(
-//     "Content-Type",
-//     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-//   );
-//   res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-
-//   workbook.xlsx
-//     .write(res)
-//     .then(() => {
-//       res.end();
-//     })
-//     .catch((error) => {
-//       console.error("Error creating Excel file:", error);
-//       res.status(500).send("Error creating Excel file.");
-//     });
-// });
-
-
-// !!!!!!!!!!!!!!!!
-
-app.get("/", (req, res) => {
-  res.render("index", {
-    data: uploadedData, // Use the uploaded data
-  });
-});
-
 app.post("/api/submit", (req, res) => {
   try{
   const selectedNames = req.body.selectedNames;
@@ -195,8 +116,6 @@ app.post("/api/submit", (req, res) => {
     "ID",
     "Name",
     "Enrollment No.",
-    "Roll no.",
-    "College",
     "Branch",
     "Year",
     "Contact No.",
@@ -210,10 +129,7 @@ app.post("/api/submit", (req, res) => {
       rowData["ID"],
       rowData["Name"],
       rowData["Enrollment No."],
-      rowData["Roll no."],
-      rowData["College"],
       rowData["Branch"],
-      rowData["Year"],
       rowData["Contact No."],
       rowData["E Mail ID"],
     ];
@@ -243,9 +159,7 @@ catch(error) {
 }});
 
 
-app.get("/upload", (req, res) => {
-  res.render("upload");
-});
+
 
 app.get("/api/getData", (req, res) => {
   const searchQuery = req.query.search;
@@ -266,7 +180,7 @@ app.get("/api/getData", (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 30035;
  
 app.listen(PORT, () => {
   console.log("Listening on port 3002....");
