@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Table with Checkboxes</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Data Table with Checkboxes</h1>
+        <form action="/submit" method="post">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Gender</th>
+                        <th>Country</th>
+                        <th>Age</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% data.forEach(function(item) { %>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedNames" value="<%= item['First Name'] %>">
+                            </td>
+                            <td><%= item["0"] %></td>
+                            <td><%= item["First Name"] %></td>
+                            <td><%= item["Last Name"] %></td>
+                            <td><%= item["Gender"] %></td>
+                            <td><%= item["Country"] %></td>
+                            <td><%= item["Age"] %></td>
+                            <td><%= item["Date"] %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            <input type="submit" class="btn btn-primary" value="Download Excel">
+        </form>
+    </div>
+</body>
+</html>
