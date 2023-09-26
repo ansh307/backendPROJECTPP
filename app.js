@@ -93,6 +93,7 @@ app.post("/api/upload", (req, res) => {
     });
 });
 
+
 app.post("/api/submit", (req, res) => {
   try{
   const selectedNames = req.body.selectedNames;
@@ -116,6 +117,8 @@ app.post("/api/submit", (req, res) => {
     "ID",
     "Name",
     "Enrollment No.",
+    "Roll no.",
+    "College",
     "Branch",
     "Year",
     "Contact No.",
@@ -129,7 +132,10 @@ app.post("/api/submit", (req, res) => {
       rowData["ID"],
       rowData["Name"],
       rowData["Enrollment No."],
+      rowData["Roll no."],
+      rowData["College"],
       rowData["Branch"],
+      rowData["Year"],
       rowData["Contact No."],
       rowData["E Mail ID"],
     ];
