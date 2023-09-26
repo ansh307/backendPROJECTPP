@@ -29,7 +29,7 @@ app.use(cors());
 app.use(fileUpload());
 
 let uploadedData = []; // Store the data from the uploaded Excel file
-app.post("/api/upload", (req, res) => {
+app.post("/api/upload", async (req, res) => {
   try {
     if (!req.files || !req.files.excelFile) {
       return res.status(400).send("No file was uploaded.");
@@ -37,71 +37,61 @@ app.post("/api/upload", (req, res) => {
 
     const excelFile = req.files.excelFile;
 
-    // Check the file extension to determine if it's XLS
+    // Detect file format (XLS or XLSX) by reading the file content
+    let buffer = excelFile.data;
     const extension = excelFile.name.split(".").pop().toLowerCase();
 
     if (extension === "xls") {
-      try {
-        // Convert XLS to XLSX
-        const xlsData = excelFile.data;
-        const xlsWorkbook = XLSX.read(xlsData, { type: "buffer" });
-        const xlsxData = XLSX.write(xlsWorkbook, {
-          bookType: "xlsx",
-          type: "buffer",
-        });
-
-        // Replace the original file with the XLSX version
-        excelFile.data = xlsxData;
-        excelFile.name = "converted.xlsx";
-      } catch (error) {
-        console.error("Error converting XLS to XLSX:", error);
-        return res.status(500).send("Error converting XLS to XLSX.");
-      }
+      // Convert XLS to XLSX
+      const xlsWorkbook = XLSX.read(buffer, { type: "buffer" });
+      const xlsxData = XLSX.write(xlsWorkbook, { bookType: "xlsx", type: "buffer" });
+      buffer = xlsxData;
     }
 
-    // Now excelFile should contain XLSX format, continue processing
-
     const workbook = new ExcelJS.Workbook();
-    workbook.xlsx
-      .load(excelFile.data)
-      .then((workbook) => {
-        const worksheet = workbook.worksheets[0];
-        const data = [];
+    await workbook.xlsx.load(buffer);
 
-        // Assuming the header row contains the column names "fffs," "Name," "Enrollment No.," "Branch," and "E Mail ID"
-        const headerRow = worksheet.getRow(1);
-        const nameCol = headerRow.getCell(2); // Adjust the column number as needed
-        const enrollmentNoCol = headerRow.getCell(3); // Adjust the column number as needed
-        const branchCol = headerRow.getCell(4); // Adjust the column number as needed
-        const emailCol = headerRow.getCell(6); // Adjust the column number as needed
+    const worksheet = workbook.worksheets[0];
+    const data = [];
 
-        worksheet.eachRow((row, rowNumber) => {
-          if (rowNumber !== 1) {
-            // Skip the header row
-            const rowData = {
-              Name: row.getCell(nameCol).value,
-              "Enrollment No.": row.getCell(enrollmentNoCol).value,
-              Branch: row.getCell(branchCol).value,
-              "E Mail ID": row.getCell(emailCol).value,
-            };
-            data.push(rowData);
-          }
-        });
+    const headerRow = worksheet.getRow(1);
+    const headerValues = headerRow.values;
 
-        // Store the data from the uploaded Excel file
-        uploadedData = data;
+    // Map column names to their respective indices
+    const columnIndices = {};
 
-        // Send a response
-        res.json(data);
-      })
-      .catch((error) => {
-        console.error("Error parsing Excel file:", error);
-        res.status(500).send("Error parsing Excel file.");
-      });
+    for (let i = 1; i <= headerValues.length; i++) {
+      columnIndices[headerValues[i - 1]] = i;
+    }
+
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber !== 1) {
+        const rowData = {};
+
+        // Loop through all columns and include them in rowData
+        for (const columnName in columnIndices) {
+          rowData[columnName] = row.getCell(columnIndices[columnName]).value;
+        }
+
+        data.push(rowData);
+      }
+    });
+
+    if (data.length === 0) {
+      return res.status(400).send("No data found in the Excel file.");
+    }
+
+    // Store the data from the uploaded Excel file
+    const uploadedData = data;
+
+    // Send a response with JSON content type and status 200
+    res.status(200).json(uploadedData);
   } catch (error) {
-    console.error("Error parsing Excel file:", error);
+    console.error("Error handling Excel file:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
+
 
 app.post("/api/submit", (req, res) => {
   try {
