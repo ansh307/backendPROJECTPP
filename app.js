@@ -29,7 +29,6 @@ app.use(cors());
 app.use(fileUpload());
 
 let uploadedData = []; // Store the data from the uploaded Excel file
-
 app.post("/api/upload", (req, res) => {
   if (!req.files || !req.files.excelFile) {
     return res.status(400).send("No file was uploaded.");
@@ -68,15 +67,22 @@ app.post("/api/upload", (req, res) => {
       const worksheet = workbook.worksheets[0];
       const data = [];
 
+      // Assuming the header row contains the column names "fffs," "Name," "Enrollment No.," "Branch," and "E Mail ID"
+      const headerRow = worksheet.getRow(1);
+      const nameCol = headerRow.getCell(2); // Adjust the column number as needed
+      const enrollmentNoCol = headerRow.getCell(3); // Adjust the column number as needed
+      const branchCol = headerRow.getCell(4); // Adjust the column number as needed
+      const emailCol = headerRow.getCell(6); // Adjust the column number as needed
+
       worksheet.eachRow((row, rowNumber) => {
         if (rowNumber !== 1) {
           // Skip the header row
-          const rowData = {};
-          row.eachCell((cell, colNumber) => {
-            const headerCell = worksheet.getRow(1).getCell(colNumber);
-            const header = headerCell.value;
-            rowData[header] = cell.value;
-          });
+          const rowData = {
+            Name: row.getCell(nameCol).value,
+            "Enrollment No.": row.getCell(enrollmentNoCol).value,
+            Branch: row.getCell(branchCol).value,
+            "E Mail ID": row.getCell(emailCol).value,
+          };
           data.push(rowData);
         }
       });
