@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const cors = require("cors");
 const ExcelJS = require("exceljs");
 const XLSX = require("xlsx");
@@ -9,17 +9,17 @@ const fileUpload = require("express-fileupload");
 
 dotenv.config();
 
-async function connectToDatabase() {
-  try {
-    await mongoose.connect(
-      process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD)
-    );
-    console.log("DB connection successful");
-  } catch (error) {
-    console.error("DB connection error:", error);
-  }
-}
-connectToDatabase();
+// async function connectToDatabase() {
+//   try {
+//     await mongoose.connect(
+//       process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD)
+//     );
+//     console.log("DB connection successful");
+//   } catch (error) {
+//     console.error("DB connection error:", error);
+//   }
+// }
+// connectToDatabase();
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -266,9 +266,9 @@ app.get("/api/getData", (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
  
 app.listen(PORT, () => {
-  console.log("Listening on port 3000....");
+  console.log("Listening on port 3002....");
 }); 
  
